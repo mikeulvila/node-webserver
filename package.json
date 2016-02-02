@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/mikeulvila/node-webserver#readme",
   "dependencies": {
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "node-cal": "github:mikeulvila/node-cal"
   }
 }
