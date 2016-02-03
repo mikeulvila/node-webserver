@@ -15,6 +15,9 @@ app.use(require('node-sass-middleware')({
   sourceMap: true
 }));
 
+//setting path to public folder to serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.get('/', (req, res) => {
   res.render('index', {
     title: 'Super Cool App',

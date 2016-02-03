@@ -2,7 +2,17 @@ doctype html
 html
   head
     title= title
+    link(rel='stylesheet', href='/vendor/bootstrap/dist/css/bootstrap.min.css', type='text/css')
+    link(rel='stylesheet', href='/vendor/font-awesome/css/font-awesome.min.css', type='text/css')
     link(rel='stylesheet', href='/stylesheets/style.css', type='text/css')
   body
+    nav(class="navbar navbar-default navbar-fixed-top")
+      div.container
+        .btn-group(role="group", aria-label="...")
+          button.btn.btn-default(type="button") Left
+          button.btn.btn-default(type="button") Middle
+          button.btn.btn-default(type="button") Right
+
     h1 Welcome to #{title}
     p.blue The date is now #{date.toLocaleDateString('en-us')}
+
