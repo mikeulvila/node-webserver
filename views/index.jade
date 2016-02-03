@@ -2,6 +2,7 @@ doctype html
 html
   head
     title= title
+    link(rel='stylesheet', href='/stylesheets/style.css', type='text/css')
   body
     h1 Welcome to #{title}
-    p The date is now #{date.toLocaleDateString('en-us')}
+    p.blue The date is now #{date.toLocaleDateString('en-us')}

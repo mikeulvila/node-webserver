@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "bower": "bower install"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,10 @@
   "dependencies": {
     "express": "^4.13.4",
     "jade": "^1.11.0",
-    "node-cal": "github:mikeulvila/node-cal"
+    "node-cal": "github:mikeulvila/node-cal",
+    "node-sass-middleware": "^0.9.7"
+  },
+  "devDependencies": {
+    "bower": "^1.7.7"
   }
 }

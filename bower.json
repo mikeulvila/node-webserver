@@ -1,0 +1,22 @@
+{
+  "name": "node-webserver",
+  "description": "",
+  "main": "server.js",
+  "authors": [
+    "Mike Ulvila <mikeulvila@me.com> (https://github.com/mikeulvila)"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/mikeulvila/node-webserver",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.0"
+  }
+}
