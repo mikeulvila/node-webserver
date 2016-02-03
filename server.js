@@ -3,6 +3,15 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.set('view engine', 'jade');
+
+app.get('/', (req, res) => {
+  res.render('index', {
+    title: 'Super Cool App',
+    date: new Date()
+  });
+});
+
 app.get('/hello', (req, res) => {
   const name = req.query.name;
 
