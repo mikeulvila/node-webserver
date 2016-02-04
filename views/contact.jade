@@ -1,0 +1,23 @@
+doctype html
+html
+  head
+    title #{title}
+    link(rel='stylesheet', href='/vendor/bootstrap/dist/css/bootstrap.min.css', type='text/css')
+    link(rel='stylesheet', href='/vendor/font-awesome/css/font-awesome.min.css', type='text/css')
+    link(rel='stylesheet', href='/stylesheets/style.css', type='text/css')
+  body
+    .container
+      h1 Contact
+      form(method='POST')
+        .form-group
+          label Name
+          input(type='text', name='name', placeholder='Name')
+        .form-group
+          label Email
+          input(type='email', name='email', placeholder='Email')
+        .form-group
+          label Message
+          textarea(name='message', placeholder='Message')
+
+        button.btn.btn-primary(type='submit') Contact Us!
+

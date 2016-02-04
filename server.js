@@ -8,6 +8,8 @@ const PORT = process.env.PORT || 3000;
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+app.locals.title = 'The Worst Calendar Ever';
+
 app.use(require('node-sass-middleware')({
   src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),
@@ -20,9 +22,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
   res.render('index', {
-    title: 'The Worst Calendar Ever',
     date: new Date()
   });
+});
+
+app.get('/contact', (req, res) => {
+  res.render('contact');
+});
+
+app.post('/contact', (req, res) => {
+  res.send(`<h1>Thanks for contacting us ${req.query.name}`);
 });
 
 app.get('/hello', (req, res) => {
