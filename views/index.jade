@@ -1,21 +1,12 @@
-doctype html
-html
-  head
-    title= title
-    link(rel='stylesheet', href='/vendor/bootstrap/dist/css/bootstrap.min.css', type='text/css')
-    link(rel='stylesheet', href='/vendor/font-awesome/css/font-awesome.min.css', type='text/css')
-    link(rel='stylesheet', href='/stylesheets/style.css', type='text/css')
-  body
-    h1 WTM!!!
-    h2 What's The Month?
+extends ./layout.jade
 
-    button#flip.btn Click here to see today's date.
-    #panel #{date.toLocaleDateString('en-us')}
+block content
 
-    #globe
+  h1 WTM!!!
+  h2 What's The Month?
 
+  button#flip.btn Click here to see today's date.
+  #panel #{date.toLocaleDateString('en-us')}
 
-    script(src='vendor/jquery/dist/jquery.min.js')
-    script(src='vendor/bootstrap/dist/js/bootstrap.min.js')
-    script(src='javascripts/animate.js')
+  #globe
 
