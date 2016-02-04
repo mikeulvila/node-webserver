@@ -4,8 +4,24 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
-const upload = require('multer')({ dest: 'tmp/uploads' });
-
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'tmp/uploads');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
+const imgur = require('imgur');
+// const uploadToImgur = imgur.uploadFile(file)
+//     .then(function (json) {
+//         console.log('IMGUR SUCCESS', json.data.link);
+//     })
+//     .catch(function (err) {
+//         console.error('IMGUR ERROR', err.message);
+//     });
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -47,6 +63,7 @@ app.get('/sendphoto', (req, res) => {
 });
 
 app.post('/sendphoto', upload.single('image'), function (req,res) {
+  console.log(req.body, req.file);
   res.send('<h1>Thansk for sending your photo');
 });
 
