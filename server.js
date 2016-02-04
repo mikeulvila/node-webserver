@@ -4,6 +4,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
+const upload = require('multer')({ dest: 'tmp/uploads' });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,7 +22,7 @@ app.use(require('node-sass-middleware')({
 }));
 
 // for forms
-app.use(bodyParser.urlencoded({ extended: false}));
+// app.use(bodyParser.urlencoded({ extended: false}));
 
 //setting path to public folder to serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -39,6 +40,14 @@ app.get('/contact', (req, res) => {
 app.post('/contact', (req, res) => {
   const name = req.body.name;
   res.send(`<h1>Thanks for contacting us ${name}`);
+});
+
+app.get('/sendphoto', (req, res) => {
+  res.render('sendphoto');
+});
+
+app.post('/sendphoto', upload.single('image'), function (req,res) {
+  res.send('<h1>Thansk for sending your photo');
 });
 
 app.get('/hello', (req, res) => {
