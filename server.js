@@ -3,19 +3,25 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const bodyParser = require('body-parser');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+//set global variable available to all views
 app.locals.title = 'The Worst Calendar Ever';
 
+//middleware for sass to css
 app.use(require('node-sass-middleware')({
   src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),
   indentedSyntax: true,
   sourceMap: true
 }));
+
+// for forms
+app.use(bodyParser.urlencoded({ extended: false}));
 
 //setting path to public folder to serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -31,7 +37,8 @@ app.get('/contact', (req, res) => {
 });
 
 app.post('/contact', (req, res) => {
-  res.send(`<h1>Thanks for contacting us ${req.query.name}`);
+  const name = req.body.name;
+  res.send(`<h1>Thanks for contacting us ${name}`);
 });
 
 app.get('/hello', (req, res) => {
