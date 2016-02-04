@@ -15,13 +15,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 const imgur = require('imgur');
-// const uploadToImgur = imgur.uploadFile(file)
-//     .then(function (json) {
-//         console.log('IMGUR SUCCESS', json.data.link);
-//     })
-//     .catch(function (err) {
-//         console.error('IMGUR ERROR', err.message);
-//     });
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -64,6 +58,13 @@ app.get('/sendphoto', (req, res) => {
 
 app.post('/sendphoto', upload.single('image'), function (req,res) {
   console.log(req.body, req.file);
+  imgur.uploadFile(req.file.path)
+    .then(function (json) {
+        console.log('IMGUR SUCCESS', json.data.link);
+    })
+    .catch(function (err) {
+        console.error('IMGUR ERROR', err.message);
+    });
   res.send('<h1>Thansk for sending your photo');
 });
 
