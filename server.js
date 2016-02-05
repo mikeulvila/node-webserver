@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 const imgur = require('imgur');
 const _ = require('lodash');
-
+const cheerio = require('cheerio');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -67,6 +67,36 @@ app.get('/api/weather', (req, res) => {
     res.send(JSON.parse(body));
   });
 });
+
+// WEB SCRAPING
+app.get('/api/news', (req, res) => {
+  const url = 'http://cnn.com';
+  request.get(url, (err, response, html) => {
+    if (err) throw err;
+    const news = [];
+    const $ = cheerio.load(html);
+
+    const $bannerText = $('.banner-text');
+
+    news.push({
+      title: $bannerText.text(),
+      url: url + $bannerText.closest('a').attr('href')
+    });
+
+    const $cdHeadline = $('.cd__headline');
+
+    _.range(1,12).map(i => {
+      const $headline = $cdHeadline.eq(i);
+      news.push({
+        title: $headline.text(),
+        url: url + $headline.find('a').attr('href')
+      });
+    });
+
+    res.send(news);
+  })
+});
+
 
 app.get('/contact', (req, res) => {
   res.render('contact');
