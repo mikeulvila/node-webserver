@@ -24,9 +24,11 @@
     "express": "^4.13.4",
     "imgur": "^0.1.7",
     "jade": "^1.11.0",
+    "lodash": "^4.2.1",
     "multer": "^1.1.0",
     "node-cal": "github:mikeulvila/node-cal",
-    "node-sass-middleware": "^0.9.7"
+    "node-sass-middleware": "^0.9.7",
+    "request": "^2.69.0"
   },
   "devDependencies": {
     "bower": "^1.7.7"

@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const request = require('request');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const storage = multer.diskStorage({
@@ -15,6 +16,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 const imgur = require('imgur');
+const _ = require('lodash');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,8 +33,10 @@ app.use(require('node-sass-middleware')({
   sourceMap: true
 }));
 
-// for forms
-// app.use(bodyParser.urlencoded({ extended: false}));
+// to parse form data to object
+app.use(bodyParser.urlencoded({ extended: false}));
+// to parse incoming json to object
+app.use(bodyParser.json());
 
 //setting path to public folder to serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -40,6 +44,27 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.render('index', {
     date: new Date()
+  });
+});
+
+//sending json data
+app.get('/api', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.send({ hello: 'world' });
+})
+//post data to an api
+app.post('/api', (req, res) => {
+  const obj = _.mapValues(req.body, (val) => val.toUpperCase());
+  //console.log(req.body);
+  res.send(obj);
+});
+//make a third party api request
+app.get('/api/weather', (req, res) => {
+  const url = 'https://api.forecast.io/forecast/0a240dea0feab43866d24f9adb42399a/37.8267,-122.423';
+  request.get(url, (err, response, body) => {
+    if (err) throw err;
+    res.header('Access-Control-Allow-Origin', '*');
+    res.send(JSON.parse(body));
   });
 });
 
