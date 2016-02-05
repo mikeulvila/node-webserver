@@ -18,6 +18,7 @@ const upload = multer({ storage: storage });
 const imgur = require('imgur');
 const _ = require('lodash');
 const cheerio = require('cheerio');
+const fs = require('fs');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -116,11 +117,15 @@ app.post('/sendphoto', upload.single('image'), function (req,res) {
   imgur.uploadFile(req.file.path)
     .then(function (json) {
         console.log('IMGUR SUCCESS', json.data.link);
+        //delete the uploaded file from local storage
+        fs.unlink(req.file.path, () => {
+          console.log('Removed file from tmp/uploads.');
+          res.send('<h1>Thansk for sending your photo');
+        });
     })
     .catch(function (err) {
         console.error('IMGUR ERROR', err.message);
     });
-  res.send('<h1>Thansk for sending your photo');
 });
 
 app.get('/hello', (req, res) => {
