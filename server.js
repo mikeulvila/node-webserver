@@ -85,47 +85,53 @@ app.get('/api/weather', (req, res) => {
 
 // WEB SCRAPING and add news to database
 app.get('/api/news', (req, res) => {
-  db.collection('news').findOne({}, (err, doc) => {
+  db.collection('news').findOne({}, {sort: {_id: -1}}, (err, doc) => {
+    console.log(doc._id.getTimestamp());
+
     if (doc) {
-      const FIFTEEN_MINUTES = 15 * 60 * 1000;
-      const diff = new Date() - doc._id.getTimestamp() - FIFTEEN_MINUTES;
-      console.log(doc._id.getTimestamp())
-      res.send(diff.toString());
-    } else {
-      const url = 'http://cnn.com';
+      const FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000;
+      const diff = new Date() - doc._id.getTimestamp() - FIFTEEN_MINUTES_IN_MS;
+      const lessThan15MinutesAgo = diff < 0;
 
-      request.get(url, (err, response, html) => {
-        if (err) throw err;
+      if (lessThan15MinutesAgo) {
+        res.send(doc);
+        return;
+      }
+    }
 
-        const news = [];
-        const $ = cheerio.load(html);
+    const url = 'http://cnn.com';
 
-        const $bannerText = $('.banner-text');
+    request.get(url, (err, response, html) => {
+      if (err) throw err;
+
+      const news = [];
+      const $ = cheerio.load(html);
+
+      const $bannerText = $('.banner-text');
+
+      news.push({
+        title: $bannerText.text(),
+        url: url + $bannerText.closest('a').attr('href')
+      });
+
+      const $cdHeadline = $('.cd__headline');
+
+      _.range(1, 12).forEach(i => {
+        const $headline = $cdHeadline.eq(i);
 
         news.push({
-          title: $bannerText.text(),
-          url: url + $bannerText.closest('a').attr('href')
-        });
-
-        const $cdHeadline = $('.cd__headline');
-
-        _.range(1, 12).forEach(i => {
-          const $headline = $cdHeadline.eq(i);
-
-          news.push({
-            title: $headline.text(),
-            url: url + $headline.find('a').attr('href')
-          });
-        });
-
-        db.collection('news').insertOne({ top: news }, (err, result) => {
-          if (err) throw err;
-
-          res.send(news);
+          title: $headline.text(),
+          url: url + $headline.find('a').attr('href')
         });
       });
-    }
-  })
+
+      db.collection('news').insertOne({ top: news }, (err, result) => {
+        if (err) throw err;
+
+        res.send(news);
+      });
+    });
+  });
 });
 
 
@@ -135,9 +141,21 @@ app.get('/contact', (req, res) => {
 });
 
 app.post('/contact', (req, res) => {
-  const name = req.body.name;
-  res.send(`<h1>Thanks for contacting us ${name}`);
+  const contactData = {
+    name: req.body.name,
+    email: req.body.email,
+    message: req.body.message
+  };
+
+  db.collection('contact').insertOne(contactData, (err, doc) => {
+    console.log('doc', doc);
+    if (err) throw err;
+
+    res.send(`<h1>Thanks for contacting us ${doc.name}`);
+
+  });
 });
+
 
 app.get('/sendphoto', (req, res) => {
   res.render('sendphoto');
