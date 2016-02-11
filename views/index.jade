@@ -1,8 +1,9 @@
 extends ./layout.jade
 
 block content
+  h1 Top news:
+    a(href="#{topHeadline.url}")  #{topHeadline.title}
 
-  h1 WTM!!!
   h2 What's The Month?
 
   button#flip.btn Click here to see today's date.

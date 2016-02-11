@@ -49,9 +49,14 @@ app.use(bodyParser.json());
 //setting path to public folder to serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+// get for index
 app.get('/', (req, res) => {
-  res.render('index', {
-    date: new Date()
+  db.collection('news').findOne({}, {sort: {_id: -1}}, (err, doc) => {
+    if (err) throw err;
+    res.render('index', {
+      date: new Date(),
+      topHeadline: doc.top[0]
+    });
   });
 });
 
@@ -151,7 +156,7 @@ app.post('/contact', (req, res) => {
     console.log('doc', doc);
     if (err) throw err;
 
-    res.send(`<h1>Thanks for contacting us ${doc.name}`);
+    res.send(`<h1>Thanks for contacting us ${contactData.name}`);
 
   });
 });
@@ -165,7 +170,13 @@ app.post('/sendphoto', upload.single('image'), function (req,res) {
   console.log(req.body, req.file);
   imgur.uploadFile(req.file.path)
     .then(function (json) {
-        console.log('IMGUR SUCCESS', json.data.link);
+        const imgurLink = json.data.link;
+        db.collection('images').insertOne({link: imgurLink}, (err, doc) => {
+          if (err) throw err;
+
+          console.log('Saved Imgur link to database');
+        });
+
         //delete the uploaded file from local storage
         fs.unlink(req.file.path, () => {
           console.log('Removed file from tmp/uploads.');
