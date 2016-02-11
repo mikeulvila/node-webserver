@@ -19,6 +19,11 @@ const imgur = require('imgur');
 const _ = require('lodash');
 const cheerio = require('cheerio');
 const fs = require('fs');
+
+// mongodb connection
+const MongoClient = require('mongodb').MongoClient
+const MONGODB_URL = 'mongodb://localhost:27017/node-webserver'
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -167,7 +172,19 @@ app.all('*', (req, res) => {
   res.status(403).send('Access Denied!');
 });
 
+MongoClient.connect(MONGODB_URL, (err, db) => {
+  if (err) throw err;
 
-app.listen(PORT, () => {
-  console.log(`node.js server started. listening on port ${PORT}`);
+  db.collection('docs').insertMany([
+      {a: 'b'}, {c: 'd'}, {e: 'f'}
+  ], (err, result) => {
+    if (err) throw err;
+    console.log(result);
+  });
+
+  app.listen(PORT, () => {
+    console.log(`node.js server started. listening on port ${PORT}`);
+  });
 });
+
+

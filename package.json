@@ -26,6 +26,7 @@
     "imgur": "^0.1.7",
     "jade": "^1.11.0",
     "lodash": "^4.2.1",
+    "mongodb": "^2.1.7",
     "multer": "^1.1.0",
     "node-cal": "github:mikeulvila/node-cal",
     "node-sass-middleware": "^0.9.7",
