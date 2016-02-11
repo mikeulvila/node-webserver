@@ -24,6 +24,8 @@ const fs = require('fs');
 const MongoClient = require('mongodb').MongoClient
 const MONGODB_URL = 'mongodb://localhost:27017/node-webserver'
 
+let db;
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -58,12 +60,19 @@ app.get('/api', (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.send({ hello: 'world' });
 })
+
 //post data to an api
 app.post('/api', (req, res) => {
   const obj = _.mapValues(req.body, (val) => val.toUpperCase());
-  //console.log(req.body);
-  res.send(obj);
+
+  db.collection('allcaps').insertOne(obj, (err, result) => {
+    if (err) throw err;
+
+    console.log(result);
+    res.send(obj);
+  });
 });
+
 //make a third party api request
 app.get('/api/weather', (req, res) => {
   const url = 'https://api.forecast.io/forecast/0a240dea0feab43866d24f9adb42399a/37.8267,-122.423';
@@ -74,34 +83,51 @@ app.get('/api/weather', (req, res) => {
   });
 });
 
-// WEB SCRAPING
+// WEB SCRAPING and add news to database
 app.get('/api/news', (req, res) => {
-  const url = 'http://cnn.com';
-  request.get(url, (err, response, html) => {
-    if (err) throw err;
-    const news = [];
-    const $ = cheerio.load(html);
+  db.collection('news').findOne({}, (err, doc) => {
+    if (doc) {
+      const FIFTEEN_MINUTES = 15 * 60 * 1000;
+      const diff = new Date() - doc._id.getTimestamp() - FIFTEEN_MINUTES;
+      console.log(doc._id.getTimestamp())
+      res.send(diff.toString());
+    } else {
+      const url = 'http://cnn.com';
 
-    const $bannerText = $('.banner-text');
+      request.get(url, (err, response, html) => {
+        if (err) throw err;
 
-    news.push({
-      title: $bannerText.text(),
-      url: url + $bannerText.closest('a').attr('href')
-    });
+        const news = [];
+        const $ = cheerio.load(html);
 
-    const $cdHeadline = $('.cd__headline');
+        const $bannerText = $('.banner-text');
 
-    _.range(1,12).map(i => {
-      const $headline = $cdHeadline.eq(i);
-      news.push({
-        title: $headline.text(),
-        url: url + $headline.find('a').attr('href')
+        news.push({
+          title: $bannerText.text(),
+          url: url + $bannerText.closest('a').attr('href')
+        });
+
+        const $cdHeadline = $('.cd__headline');
+
+        _.range(1, 12).forEach(i => {
+          const $headline = $cdHeadline.eq(i);
+
+          news.push({
+            title: $headline.text(),
+            url: url + $headline.find('a').attr('href')
+          });
+        });
+
+        db.collection('news').insertOne({ top: news }, (err, result) => {
+          if (err) throw err;
+
+          res.send(news);
+        });
       });
-    });
-
-    res.send(news);
+    }
   })
 });
+
 
 
 app.get('/contact', (req, res) => {
@@ -172,16 +198,9 @@ app.all('*', (req, res) => {
   res.status(403).send('Access Denied!');
 });
 
-MongoClient.connect(MONGODB_URL, (err, db) => {
+MongoClient.connect(MONGODB_URL, (err, database) => {
   if (err) throw err;
-
-  db.collection('docs').insertMany([
-      {a: 'b'}, {c: 'd'}, {e: 'f'}
-  ], (err, result) => {
-    if (err) throw err;
-    console.log(result);
-  });
-
+  db = database;
   app.listen(PORT, () => {
     console.log(`node.js server started. listening on port ${PORT}`);
   });
