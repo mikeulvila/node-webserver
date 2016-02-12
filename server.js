@@ -21,7 +21,8 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 
 // mongodb connection
-const MongoClient = require('mongodb').MongoClient
+//const MongoClient = require('mongodb').MongoClient
+const mongoose = require('mongoose');
 const MONGODB_URL = 'mongodb://localhost:27017/node-webserver'
 
 let db;
@@ -51,13 +52,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // get for index
 app.get('/', (req, res) => {
-  db.collection('news').findOne({}, {sort: {_id: -1}}, (err, doc) => {
+  News.findOne().sort('-_id').exec((err, doc) => {
+
     if (err) throw err;
     res.render('index', {
       date: new Date(),
       topHeadline: doc.top[0]
     });
+
   });
+
 });
 
 //sending json data
@@ -70,11 +74,11 @@ app.get('/api', (req, res) => {
 app.post('/api', (req, res) => {
   const obj = _.mapValues(req.body, (val) => val.toUpperCase());
 
-  db.collection('allcaps').insertOne(obj, (err, result) => {
+  AllCaps.create(obj, (err, _caps) => {
     if (err) throw err;
 
-    console.log(result);
-    res.send(obj);
+    console.log(_caps);
+    res.send(_caps);
   });
 });
 
@@ -90,7 +94,8 @@ app.get('/api/weather', (req, res) => {
 
 // WEB SCRAPING and add news to database
 app.get('/api/news', (req, res) => {
-  db.collection('news').findOne({}, {sort: {_id: -1}}, (err, doc) => {
+  News.findOne().sort('-_id').exec((err, doc) => {
+
     console.log(doc._id.getTimestamp());
 
     if (doc) {
@@ -130,10 +135,12 @@ app.get('/api/news', (req, res) => {
         });
       });
 
-      db.collection('news').insertOne({ top: news }, (err, result) => {
+      const obj = new News({top: news});
+
+       obj.save((err, newNews) => {
         if (err) throw err;
 
-        res.send(news);
+        res.send(newNews);
       });
     });
   });
@@ -145,23 +152,33 @@ app.get('/contact', (req, res) => {
   res.render('contact');
 });
 
+
 app.post('/contact', (req, res) => {
-  const contactData = {
+  // from Contact mongoose Schema
+  const contactData = new Contact({
     name: req.body.name,
     email: req.body.email,
     message: req.body.message
-  };
+  });
 
-  db.collection('contact').insertOne(contactData, (err, doc) => {
-    console.log('doc', doc);
-    if (err) throw err;
+  contactData.save((err, doc) => {
+      if (err) throw err;
 
-    res.send(`<h1>Thanks for contacting us ${contactData.name}`);
+      console.log(doc);
+      res.send(`<h1>Thanks for contacting us ${contactData.name}`);
 
   });
+
+  // db.collection('contact').insertOne(contactData, (err, doc) => {
+  //   console.log('doc', doc);
+  //   if (err) throw err;
+
+  //   res.send(`<h1>Thanks for contacting us ${contactData.name}`);
+
+  // });
 });
 
-
+//UPLOAD PHOTO PAGE
 app.get('/sendphoto', (req, res) => {
   res.render('sendphoto');
 });
@@ -227,9 +244,34 @@ app.all('*', (req, res) => {
   res.status(403).send('Access Denied!');
 });
 
-MongoClient.connect(MONGODB_URL, (err, database) => {
-  if (err) throw err;
-  db = database;
+// mongoose connection
+mongoose.connect(MONGODB_URL);
+
+// define mongoose schemas
+const Images = mongoose.model('images', mongoose.Schema({
+
+}));
+
+const AllCaps = mongoose.model('allcaps', mongoose.Schema({}, {
+  //options to take anything
+  strict: false
+}));
+
+const Contact = mongoose.model('contacts', mongoose.Schema({
+    name: String,
+    email: String,
+    message: String
+  }));
+
+const News = mongoose.model('news', mongoose.Schema({
+  top: [{title: String, url: String}]
+}));
+
+// mongoose connection
+mongoose.connection.on('open', () => {
+  console.log('MONGOOSE');
+  //if (err) throw err;
+  //db = database;
   app.listen(PORT, () => {
     console.log(`node.js server started. listening on port ${PORT}`);
   });
