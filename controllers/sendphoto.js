@@ -1,5 +1,8 @@
 'use strict'
 
+const image = require('../models/Image.js');
+const imgur = require('imgur');
+
 // send photo page
 module.exports.index = (req, res) => {
   res.render('sendphoto');

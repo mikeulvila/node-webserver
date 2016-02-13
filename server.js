@@ -4,13 +4,10 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
-const imgur = require('imgur');
 const fs = require('fs');
 
 // routes
-const routes = require('./routes/routes.js');
-const api = require('./routes/api');
-const contact = require('./routes/contact');
+const routes = require('./routes/index.js');
 
 // mongodb connection
 //const MongoClient = require('mongodb').MongoClient
@@ -34,8 +31,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // use routes
 app.use(routes);
-app.use(api);
-app.use(contact);
 
 // middleware for sass to css
 app.use(require('node-sass-middleware')({

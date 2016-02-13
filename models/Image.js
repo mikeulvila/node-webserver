@@ -1,6 +1,7 @@
 'use strict'
 
 const mongoose = require('mongoose');
-const Images = mongoose.model('images', mongoose.Schema({
 
+module.exports = mongoose.model('images', mongoose.Schema({
+  link: String
 }));
