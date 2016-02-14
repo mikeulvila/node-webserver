@@ -4,7 +4,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
-const fs = require('fs');
+
 
 // routes
 const routes = require('./routes/index.js');

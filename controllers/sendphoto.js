@@ -2,6 +2,10 @@
 
 const image = require('../models/Image.js');
 const imgur = require('imgur');
+const fs = require('fs');
+
+//model
+const images = require('../models/Image.js');
 
 // send photo page
 module.exports.index = (req, res) => {
@@ -13,7 +17,7 @@ module.exports.newPhoto = (req,res) => {
   imgur.uploadFile(req.file.path)
     .then(function (json) {
         const imgurLink = json.data.link;
-        db.collection('images').insertOne({link: imgurLink}, (err, doc) => {
+        images.create({link: imgurLink}, (err, doc) => {
           if (err) throw err;
 
           console.log('Saved Imgur link to database');
@@ -22,7 +26,7 @@ module.exports.newPhoto = (req,res) => {
         //delete the uploaded file from local storage
         fs.unlink(req.file.path, () => {
           console.log('Removed file from tmp/uploads.');
-          res.send('<h1>Thansk for sending your photo');
+          res.send('<h1>Thanks for sending your photo!');
         });
     })
     .catch(function (err) {
