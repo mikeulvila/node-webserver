@@ -16,7 +16,5 @@ router.get('/', (req, res) => {
       //topHeadline: doc.top[0]
     });
   });
-});
-
 
 module.exports = router;
