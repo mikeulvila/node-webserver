@@ -1,7 +1,9 @@
 'use strict'
+
 const express = require('express');
 const path = require('path');
 const app = express();
+// have to create a dynamic port to work with heroku
 const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 
@@ -12,7 +14,16 @@ const routes = require('./routes/index.js');
 // mongodb connection
 //const MongoClient = require('mongodb').MongoClient
 const mongoose = require('mongoose');
-const MONGODB_URL = 'mongodb://localhost:27017/node-webserver'
+
+const MONGODB_HOST = process.env.MONGODB_HOST || 'localhost';
+const MONGODB_PORT = process.env.MONGODB_PORT || 27017;
+const MONGODB_USER = process.env.MONGODB_USER || '';
+const MONGODB_PASS = process.env.MONGODB_PASS || '';
+const MONGODB_NAME = 'node-webserver';
+
+const MONGODB_AUTH = MONGODB_USER ? `${MONGODB_USER}:${MONGODB_PASS}@` : '';
+
+const MONGODB_URL = `mongodb://${MONGODB_AUTH}${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_NAME}`;
 
 //set global variable available to all views
 app.locals.title = 'The Worst Calendar Ever';
