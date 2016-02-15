@@ -35,8 +35,5 @@
     "node-cal": "github:mikeulvila/node-cal",
     "node-sass-middleware": "^0.9.7",
     "request": "^2.69.0"
-  },
-  "devDependencies": {
-    "bower": "^1.7.7"
   }
 }
