@@ -43,8 +43,6 @@ router.get('/api/weather', (req, res) => {
 router.get('/api/news', (req, res) => {
   News.findOne().sort('-_id').exec((err, doc) => {
 
-    console.log(doc._id.getTimestamp());
-
     if (doc) {
       const FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000;
       const diff = new Date() - doc._id.getTimestamp() - FIFTEEN_MINUTES_IN_MS;
